@@ -19,14 +19,14 @@ from sqlalchemy.sql import text
 engine = create_engine("sqlite:///Resources/hawaii.sqlite")
 
 # reflect an existing database into a new model
-Base = automap_base()
+base = automap_base()
 
 # reflect the tables
-Base.prepare(autoload_with=engine)
+base.prepare(autoload_with=engine)
 
 # Save references to each table
-Measurement = Base.classes.measurement
-Station = Base.classes.station
+measurement = base.classes.measurement
+station = base.classes.station
 
 # Create our session (link) from Python to the DB
 session = Session(engine)
@@ -56,16 +56,16 @@ def home():
 @app.route('/api/v1.0/precipitation')
 def precipitation():
     
-    recent_date = session.query(Measurement.date).order_by(Measurement.date.desc()).first()
+    recent_date = session.query(measurement.date).order_by(measurement.date.desc()).first()
 
     # Starting from the most recent data point in the database. 
-    session.query(Measurement.date).order_by(Measurement.date.desc()).first()
+    session.query(measurement.date).order_by(measurement.date.desc()).first()
 
     # Calculate the date one year from the last date in data set.
     previous_year = dt.datetime.strptime(recent_date[0], '%Y-%m-%d')-dt.timedelta(days=366)
 
     # Perform a query to retrieve the data and precipitation scores
-    score = session.query(Measurement.date, Measurement.prcp). filter(Measurement.date >= previous_year).all()
+    score = session.query(measurement.date, measurement.prcp). filter(measurement.date >= previous_year).all()
     
     # close the session
     session.close()
@@ -82,7 +82,7 @@ def precipitation():
 
 @app.route('/api/v1.0/stations')
 def stations():
-    rows = session.query(Station.station).all()
+    rows = session.query(station.station).all()
 
     # close the session
     session.close()
@@ -96,17 +96,17 @@ def stations():
 
 @app.route('/api/v1.0/tobs')
 def tobs():
-    recent_date = session.query(Measurement.date).order_by(Measurement.date.desc()).first()
+    recent_date = session.query(measurement.date).order_by(measurement.date.desc()).first()
 
     # Starting from the most recent data point in the database. 
-    session.query(Measurement.date).order_by(Measurement.date.desc()).first()
+    session.query(measurement.date).order_by(measurement.date.desc()).first()
 
     # Calculate the date one year from the last date in data set.
     previous_year = dt.datetime.strptime(recent_date[0], '%Y-%m-%d')-dt.timedelta(days=366)
 
     # finding most active station
-    mostactive_station = session.query(Measurement.date, Measurement.tobs).filter(Measurement.station == 'USC00519281')\
-        .filter(Measurement.date >= previous_year).all()
+    mostactive_station = session.query(measurement.date, measurement.tobs).filter(measurement.station == 'USC00519281')\
+        .filter(measurement.date >= previous_year).all()
     
     # close the session
     session.close()
@@ -122,8 +122,8 @@ def tobs():
 def compute_with_start(start):
     
     # Fetch Min, Avg and Max temprature for measurements greater than or equal to start date passed in the request
-    rows = session.query(func.min(Measurement.tobs).label('TMIN'), func.avg(Measurement.tobs).label('TAVG'), func.max(Measurement.tobs).label('TMAX'))\
-        .filter(Measurement.date >= start).all()
+    rows = session.query(func.min(measurement.tobs).label('TMIN'), func.avg(measurement.tobs).label('TAVG'), func.max(measurement.tobs).label('TMAX'))\
+        .filter(measurement.date >= start).all()
 
     # close the session
     session.close()
@@ -135,8 +135,8 @@ def compute_with_start(start):
 def compute_with_start_and_end(start, end):
 
     # Fetch Min, Avg and Max temprature for measurements greater than or equal to start date and less than or equal to end date passed in the request
-    rows = session.query(func.min(Measurement.tobs).label('TMIN'), func.avg(Measurement.tobs).label('TAVG'), func.max(Measurement.tobs).label('TMAX'))\
-        .filter(Measurement.date >= start).filter(Measurement.date <= end).all()
+    rows = session.query(func.min(measurement.tobs).label('TMIN'), func.avg(measurement.tobs).label('TAVG'), func.max(measurement.tobs).label('TMAX'))\
+        .filter(measurement.date >= start).filter(measurement.date <= end).all()
 
     # close the session
     session.close()
