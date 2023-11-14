@@ -67,6 +67,7 @@ def precipitation():
     # Perform a query to retrieve the data and precipitation scores
     score = session.query(Measurement.date, Measurement.prcp). filter(Measurement.date >= previous_year).all()
     
+    # close the session
     session.close()
 
     # Define Dictionary to return
@@ -83,6 +84,10 @@ def precipitation():
 def stations():
     rows = session.query(Station.station).all()
 
+    # close the session
+    session.close()
+
+    # create list of stations
     list = []
     for row in rows:
         list.append(row.station)
@@ -102,6 +107,11 @@ def tobs():
     # finding most active station
     mostactive_station = session.query(Measurement.date, Measurement.tobs).filter(Measurement.station == 'USC00519281')\
         .filter(Measurement.date >= previous_year).all()
+    
+    # close the session
+    session.close()
+
+    # create list of temprature for stations
     list_of_temp = []
     for station in mostactive_station:
         list_of_temp.append(station.tobs)
@@ -115,6 +125,9 @@ def compute_with_start(start):
     rows = session.query(func.min(Measurement.tobs).label('TMIN'), func.avg(Measurement.tobs).label('TAVG'), func.max(Measurement.tobs).label('TMAX'))\
         .filter(Measurement.date >= start).all()
 
+    # close the session
+    session.close()
+
     # Since returned number of rows is one, we can just access the row list as rows[0]
     return jsonify(rows[0].TMIN, rows[0].TAVG, rows[0].TAVG)
 
@@ -124,7 +137,10 @@ def compute_with_start_and_end(start, end):
     # Fetch Min, Avg and Max temprature for measurements greater than or equal to start date and less than or equal to end date passed in the request
     rows = session.query(func.min(Measurement.tobs).label('TMIN'), func.avg(Measurement.tobs).label('TAVG'), func.max(Measurement.tobs).label('TMAX'))\
         .filter(Measurement.date >= start).filter(Measurement.date <= end).all()
-    
+
+    # close the session
+    session.close()
+
     # Since returned number of rows is one, we can just access the row list as rows[0]
     return jsonify(rows[0].TMIN, rows[0].TAVG, rows[0].TAVG)
 
