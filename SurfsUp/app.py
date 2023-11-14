@@ -128,8 +128,15 @@ def compute_with_start(start):
     # close the session
     session.close()
 
+    # Create dictionary to save the data
+    dict = {}
+
+    dict['Min Temprature'] = rows[0].TMIN
+    dict['Avg Temprature'] = rows[0].TAVG
+    dict['Max Temprature'] = rows[0].TMAX
+
     # Since returned number of rows is one, we can just access the row list as rows[0]
-    return jsonify(rows[0].TMIN, rows[0].TAVG, rows[0].TAVG)
+    return jsonify(dict)
 
 @app.route('/api/v1.0/<start>/<end>')
 def compute_with_start_and_end(start, end):
@@ -141,8 +148,15 @@ def compute_with_start_and_end(start, end):
     # close the session
     session.close()
 
+    # Create dictionary to save the data
+    dict = {}
+
+    dict['Min Temprature'] = rows[0].TMIN
+    dict['Avg Temprature'] = rows[0].TAVG
+    dict['Max Temprature'] = rows[0].TMAX
+
     # Since returned number of rows is one, we can just access the row list as rows[0]
-    return jsonify(rows[0].TMIN, rows[0].TAVG, rows[0].TAVG)
+    return jsonify(dict)
 
 if __name__ == "__main__":
     app.run(debug=True)
